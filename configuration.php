@@ -4,7 +4,7 @@
 /* General Application's Configurations */
 
 // The Entire Application/Software Name
-define('APP_NAME', 'Taskero');
+define('APP_NAME', 'FreePhpMvc');
 
 // The Entire Application/Software language
 define('APP_LANG', 'pt-br');
@@ -13,7 +13,7 @@ define('APP_LANG', 'pt-br');
 define('APP_CHARSET', 'utf-8');
 
 // The Entire Application/Software Name
-define('APP_HOME', 'TaskList');
+define('APP_HOME', 'freephpmvc');
 
 // Timezone
 date_default_timezone_set('America/Sao_Paulo');
@@ -22,7 +22,7 @@ date_default_timezone_set('America/Sao_Paulo');
 define('BASE_PATH', dirname(__FILE__));
 
 // Home URL 
-define('HOME_URI', 'http://localhost/taskero');
+define('HOME_URI', 'http://localhost/freephpmvc');
 
 // Upload directory path
 define('UPLOAD_PATH', BASE_PATH . '/view/uploads');
