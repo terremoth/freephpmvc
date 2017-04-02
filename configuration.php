@@ -38,6 +38,9 @@ define('DEBUG', true);
 
 /* Database Configuration */
 
+// DataBase Management System, default is mysql
+define('DBMS', 'mysql'); // see: http://php.net/manual/pt_BR/pdo.drivers.php 
+
 // Hostname
 define('DB_HOSTNAME', 'localhost');
 
