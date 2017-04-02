@@ -5,11 +5,11 @@
  */
 function __autoload($sClassName) 
 {
-    $sFile = BASE_PATH . '/system/' . $sClassName.'.php';
+    $sFile = BASE_PATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . $sClassName.'.php';
     
     if (!file_exists($sFile)) {
         //If the file does not exists go to 404
-        require_once BASE_PATH . '/system/404.php';
+        require_once BASE_PATH .DIRECTORY_SEPARATOR . 'system'. DIRECTORY_SEPARATOR . '.404.php';
     } else {
         // Load the class file
         require_once $sFile;
@@ -24,7 +24,7 @@ function __autoload($sClassName)
  */
 function arrayKey($aArray, $iKey) 
 {
-    // Verifica se a chave existe no array
+    // verifies if the key exists in array and is not empty
     if (isset($aArray[$iKey]) && !empty($aArray[$iKey])) {
         // Retorna o valor da chave
         return $aArray[$iKey];
@@ -62,26 +62,37 @@ function existVisualValue($xValue)
     }
 }
 
-
 /**
-* 
-* @param string $sCompleteFilename The favicon image filename including its extension to load
-*/
+ * Loads favicon files inside HTML
+ * @todo More complex intelligent favicon loader, loading its sizes 
+ * @param string $sCompleteFilename The favicon image filename including its extension to load
+ */
 function loadFavIcon($sCompleteFilename){
 
    $sFileInfo = pathinfo(BASE_PATH . '/asset/img/'. $sCompleteFilename);
-
+   
+   if ($sFileInfo['extension'] == 'ico') {
+       $sFileInfo['extension'] =  'x-icon';
+   }
+   
    echoln('<link rel="shortcut icon" type="image/'.$sFileInfo['extension'].'" href="' . BASE_PATH . '/asset/img/'. $sCompleteFilename . '">');
    echoln('<link rel="icon" type="image/'.$sFileInfo['extension'].'" href="' . BASE_PATH . '/asset/img/'. $sCompleteFilename . '">');
 }
 
+/**
+ * Clears dirty data
+ * @param string $sSenderRequest
+ * @param bool $bStriptTags 
+ * @return string Decoded string
+ */
 function sanitizeRequest($sSenderRequest, $bStriptTags = false)
 {
     // Removes < > (tags structures)
-    $sSenderRequest = strip_tags($sSenderRequest) ? $bStriptTags : $sSenderRequest;
+    $sSenderRequest = $bStriptTags ? strip_tags($sSenderRequest) : $sSenderRequest;
     
     // Converts special chars to html entities
-    $sDecodedString = htmlspecialchars($sSenderRequest, ENT_QUOTES, strtoupper(APP_CHARSET));
+    $sCharset = defined('APP_CHARSET') ? APP_CHARSET : 'UTF-8';
+    $sDecodedString = htmlspecialchars($sSenderRequest, ENT_QUOTES, strtoupper($sCharset));
     
     return $sDecodedString;
 }
