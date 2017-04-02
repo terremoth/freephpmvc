@@ -1,16 +1,18 @@
 <?php
 
 /**
- * FreePHPMVC - Manages the entire MVC
+ * FreePhpMvc - Manages the entire MVC
  *
- * @name FreePHPMVC
- * @package FreePHPMVC
+ * @name FreePhpMvc
+ * @package FreePhpMvc
  * @author Lucas Marques Dutra <dutr4@outlook.com>
- * @version 1.0
+ * @version 1.0.0
  * @since 2016-11-25
+ * @link https://github.com/terremoth/freephpmvc
+ * @license https://github.com/terremoth/freephpmvc/LICENSE.md
  * @copyright (c) 2016, Lucas Marques Dutra - General Public License v.3 / Copyleft Software
  */
-class FreePHPMVC 
+class FreePhpMvc 
 {
     /**
      * Application Controller
@@ -46,7 +48,7 @@ class FreePHPMVC
      * Class constructor
      * Get controller, action and params, then configures it all
      */
-    function __construct() 
+    public function __construct() 
     {
         // Get the controller values, action and params through the URL, and configures it
         $this->getUrlData();
@@ -71,47 +73,56 @@ class FreePHPMVC
         if (isset($_GET['path'])) {
 
             // Get the value of $_GET['path']
-            $path = $_GET['path'];
+            $sPath = $_GET['path'];
 
             // Cleans dirty data
-            $path = rtrim($path, '/');
-            $path = filter_var($path, FILTER_SANITIZE_URL);
+            $sPath = rtrim($sPath, '/');
+            $sPath = filter_var($sPath, FILTER_SANITIZE_URL);
 
             // Create array with path properties
-            $path = explode('/', $path);
+            $sPath = explode('/', $sPath);
             $this->controller  = 'Controller';
             // Controller Name
-            $this->controller .= arrayKey($path, 0);
+            $this->controller .= arrayKey($sPath, 0);
             // Action/Method passed to the controller
-            $this->action = arrayKey($path, 1);
+            $this->action = arrayKey($sPath, 1);
             
             // Configura os parâmetros
-            if (arrayKey($path, 2)) {
-                unset($path[0]);
-                unset($path[1]);
+            if (arrayKey($sPath, 2)) {
+                unset($sPath[0]);
+                unset($sPath[1]);
 
                 // All the params will be sent here reorganizing the arrays positions
-                $this->params = array_values($path);
+                $this->params = array_values($sPath);
             }
+            
+            return true;
         } else {
             return false;
         }
     }
-
+    
+    /**
+     * Loads the default defined controller name, using "APP_HOME"
+     */
     public function loadDefaultController() 
     {
         // Add default controller
         require_once BASE_PATH . '/controller/Controller'.APP_HOME.'.php';
         
         // Creates controller Defined as home by the user
-        $oControllerName = 'Controller'.APP_HOME;
+        $sControllerName = 'Controller'.APP_HOME;
         
-        $this->controller = new $oControllerName();
+        $this->controller = new $sControllerName();
 
         // executes index method
         $this->controller->index();
     }
-
+    
+    /**
+     * Try to load the default instancied/initialized controller
+     * @return boolean
+     */
     public function tryDefinedController() 
     {
         // If the controller file not exists, go to 404 defined page
@@ -132,13 +143,12 @@ class FreePHPMVC
                 $this->controller = new $oController();
                 $this->tryDefinedMethod();
                 
-                /* All occurrences below send to the 404 page if the requirements were not attended */
-            } else {
-                require_once PAGE_404;
+                return true;
             }
-        } else {
-            require_once PAGE_404;
         }
+        
+        require_once PAGE_404;
+        return false;
     }
     
     /**
@@ -148,7 +158,6 @@ class FreePHPMVC
     public function tryDefinedMethod() 
     {
         // if method exists, call it and send the params
-        
         if (method_exists($this->controller, $this->action)) {
             $this->controller->{$this->action}($this->params);
         } else {
@@ -160,34 +169,16 @@ class FreePHPMVC
     /**
      * Tries to call the index method in the setted controller
      * if cannot load, go to 404 page
+     * @return boolean load status
      */
     public function callIndexMethod() 
     {
         if (!$this->action && method_exists($this->controller, 'index')) {
             $this->controller->index($this->params);
-        } else {
-            require_once PAGE_404;
-        }
+            return true;
+        } 
+        
+        require_once PAGE_404;
+        return false;
     }
-
-    public function getAction() 
-    {
-        return $this->action;
-    }
-
-    public function getParams() 
-    {
-        return $this->params;
-    }
-
-    public function setAction($action) 
-    {
-        $this->action = $action;
-    }
-
-    public function setParams($params) 
-    {
-        $this->params = $params;
-    }
-    
 }
